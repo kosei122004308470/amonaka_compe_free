@@ -219,7 +219,10 @@ user_input = f"""
 """
 
 response = client.responses.create(
-    model="gpt-5.6",
+    model="gpt-5.6-luna",
+    reasoning={
+        "effort": "medium"
+    },
     instructions=system_prompt,
     input=[
         {

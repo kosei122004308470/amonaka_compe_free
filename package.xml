@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
 <package format="3">
-  <name>carrobo_tidyup_pkg</name>
+  <name>amonaka_compe_free</name>
   <version>0.1.0</version>
   <description>Car-Robo @Home tidy-up task state machine example</description>
   <maintainer email="takeyama.ren796@mail.kyutech.jp">carrobo2026</maintainer>

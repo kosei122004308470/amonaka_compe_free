@@ -4,7 +4,7 @@ from glob import glob
 from setuptools import find_packages
 from setuptools import setup
 
-package_name = 'carrobo_tidyup_pkg'
+package_name = 'amonaka_compe_free'
 
 setup(
     name=package_name,
@@ -34,7 +34,7 @@ setup(
     },
     entry_points={
         'console_scripts': [
-            'tidyup_sm = carrobo_tidyup_pkg.tidyup_sm:main',
+            'tidyup_sm = amonaka_compe_free.tidyup_sm:main',
         ],
     },
 )

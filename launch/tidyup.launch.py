@@ -55,7 +55,7 @@ def generate_launch_description():
                 condition=IfCondition(LaunchConfiguration('use_yasmin_viewer')),
             ),
             Node(
-                package='carrobo_tidyup_pkg',
+                package='amonaka_compe_free',
                 executable='tidyup_sm',
                 name='carrobo_tidyup',
                 output='screen',

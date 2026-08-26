@@ -1,0 +1,54 @@
+pick_shelf:
+  x: 5.75
+  y: -1.2
+  theta: -90.0
+
+pick_table_sq:
+  x: 6.5
+  y: 0.8
+  theta: 0.0
+
+pick_table_rect:
+  x: 6.8
+  y: 3.8
+  theta: 0.0
+
+pick_table_cir:
+  x: 5.8
+  y: 2.8
+  theta: 90.0
+
+place_box_a:
+  x: 7.5
+  y: -1.2
+  theta: -90.0
+
+place_box_b:
+  x: 7.2
+  y: 5.4
+  theta: 0.0
+
+place_shelf:
+  x: 2.2
+  y: 4.2
+  theta: 90.0
+
+place_drawer:
+  x: 1.4
+  y: -1.2
+  theta: -90.0
+
+place_container:
+  x: 2.4
+  y: -1.2
+  theta: -90.0
+
+place_penholder:
+  x: 2.8
+  y: -1.2
+  theta: -90.0
+
+place_tray:
+  x: 3.4
+  y: -1.2
+  theta: -90.0

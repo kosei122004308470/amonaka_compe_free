@@ -1,0 +1,54 @@
+food:
+  cheez-it:
+  sugerbox:
+  tomatocan:
+  mustard:
+  tunacan:
+  chocobox:
+  strawberrybox:
+  spam:
+  banana:
+  strawberry:
+  apple:
+  lemon:
+  peach:
+  pear:
+  orange:
+  plum:
+
+shape:
+  soccerball:
+  softball:
+  baseball:
+  tennisball:
+  racquetball:
+  golfball:
+  chain:
+  foambrick:
+  dice:
+  marbies:
+  cup:
+
+kitchen:
+  pitcherbase:
+  cleanserbottle:
+  spraybottle:
+  bowl:
+  mug:
+  sponge:
+  plate:
+  plate:
+  fork:
+  spatula:
+
+task:
+  padlock:
+  clamp:
+  woodblock:
+  9-peg:
+  lego:
+  rubiks:
+
+orientation:
+  spoon:
+  marker:

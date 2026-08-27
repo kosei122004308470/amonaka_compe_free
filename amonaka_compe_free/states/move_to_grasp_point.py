@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """物体を把持する場所まで移動するステート."""
+import numpy as np
 
 from geometry_msgs.msg import Pose2D
 from navigation_tools.navlib import NavModule
@@ -11,9 +12,9 @@ from yasmin import State
 
 
 # 把持場所の map 座標
-GOAL_X = 6.9
-GOAL_Y = 0.56
-GOAL_YAW = 0.0
+GOAL_X = 2.0
+GOAL_Y = 2.3
+GOAL_YAW = np.deg2rad(180.0)
 
 # 0.0 は到着するまで待ち続けます。必要なら秒数を指定してください。
 NAVIGATION_TIMEOUT = 0.0

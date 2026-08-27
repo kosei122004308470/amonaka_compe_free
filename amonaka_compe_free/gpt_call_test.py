@@ -1,21 +1,21 @@
 import base64
-import rclpy
+#import rclpy
 import yaml
 
 from openai import OpenAI
 
-from camera_capture import CameraCapture
 
+#from camera_capture import CameraCapture
 
 # ============================================================
 # ROS 2
 # ============================================================
 
-rclpy.init()
+#rclpy.init()
 
-camera = CameraCapture(
-    image_topic="/image_raw"
-)
+#camera = CameraCapture(
+#    image_topic="/image_raw"
+#)
 
 
 # ============================================================
@@ -758,7 +758,7 @@ instruction = input(
 # ============================================================
 # 指示を受けたタイミングでカメラ撮影
 # ============================================================
-
+"""
 jpeg_data = camera.capture()
 
 if jpeg_data is None:
@@ -771,13 +771,22 @@ if jpeg_data is None:
     #rclpy.shutdown()
 
     exit(1)
+"""
 
 # ============================================================
 # JPEG → Base64
 # ============================================================
 
+image_path = (
+    "/home/carrobo2026/hma2_ws/src/"
+    "amonaka_compe_free/config/image.jpeg"
+)
+
+with open(image_path, "rb") as f:
+    image_bytes = f.read()
+
 image_base64 = base64.b64encode(
-    jpeg_data
+    image_bytes
 ).decode("utf-8")
 
 
@@ -855,5 +864,5 @@ print(response.output_text)
 # 終了
 # ============================================================
 
-camera.destroy_node()
-rclpy.shutdown()
+#camera.destroy_node()
+#rclpy.shutdown()

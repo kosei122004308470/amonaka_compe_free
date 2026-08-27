@@ -4,7 +4,7 @@ import yaml
 
 from openai import OpenAI
 
-from camera_capture import CameraCapture
+from pointing_pic import CameraCapture
 
 
 # ============================================================

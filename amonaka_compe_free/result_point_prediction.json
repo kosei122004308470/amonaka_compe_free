@@ -1,0 +1,26 @@
+{
+  "instruction_features": [
+    "Human は画像左上方向を指差している",
+    "画像左は東、Human の yaw 0° は北を示すため、指差し方向は北東"
+  ],
+  "p_no1": [
+    {
+      "point": "place_shelf",
+      "reason": "Human から見て北東方向にあり、指差し方向と最もよく一致する"
+    },
+    {
+      "point": "place_box_b",
+      "reason": "Human から見て北東方向にあり、指差し方向と一致する"
+    }
+  ],
+  "p_no2": [
+    {
+      "point": "pick_table_cir",
+      "reason": "Human の東寄り北東方向にあり、指差し方向に比較的近い"
+    },
+    {
+      "point": "pick_table_rect",
+      "reason": "Human の東北東方向にあり、北東方向の候補として可能性が残る"
+    }
+  ]
+}

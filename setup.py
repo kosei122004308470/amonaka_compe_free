@@ -20,8 +20,12 @@ setup(
             os.path.join('share', package_name, 'launch'),
             glob('launch/*.launch.py'),
         ),
+        (
+            os.path.join('share', package_name, 'config'),
+            glob('config/*'),
+        ),
     ],
-    install_requires=['setuptools'],
+    install_requires=['setuptools', 'openai', 'PyYAML'],
     zip_safe=True,
     maintainer='carrobo2026',
     maintainer_email='takeyama.ren796@mail.kyutech.jp',

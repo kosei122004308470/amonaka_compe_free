@@ -1,7 +1,10 @@
+import time
+
 import cv2
 import rclpy
 
 from rclpy.node import Node
+from rclpy.qos import qos_profile_sensor_data
 from sensor_msgs.msg import Image
 from cv_bridge import CvBridge
 
@@ -13,7 +16,8 @@ class CameraCapture(Node):
         image_topic="/image_raw",
         node_name="camera_capture",
     ):
-        super().__init__(node_name)
+        # launch の __node remap をこの補助ノードへ適用しないようにします。
+        super().__init__(node_name, use_global_arguments=False)
 
         self.bridge = CvBridge()
 
@@ -25,7 +29,7 @@ class CameraCapture(Node):
             Image,
             image_topic,
             self._image_callback,
-            10,
+            qos_profile_sensor_data,
         )
 
         self.get_logger().info(
@@ -33,38 +37,39 @@ class CameraCapture(Node):
         )
 
     def _image_callback(self, msg: Image):
-        """
-        カメラから受信した最新画像を保持する。
-
-        JPEG化はここでは行わない。
-        """
+        """カメラから受信した最新画像を保持する."""
         self.latest_image = msg
 
-    def capture(self, quality=90):
+    def capture(self, quality=90, timeout_sec=5.0):
         """
-        capture()を呼び出したタイミングで
-        最新のカメラ画像をJPEG化する。
+        最新のカメラ画像をJPEG化する.
 
-        Returns:
-            bytes | None:
-                JPEGデータ
+        Returns
+        -------
+        bytes | None
+            JPEGデータ.
+
         """
-
         # ------------------------------------------------
         # ROSのcallbackを処理
         # ------------------------------------------------
         #
-        # ここで最新の/image_rawを受信する
+        # ここで設定された画像トピックの最新フレームを受信する
         #
-        rclpy.spin_once(
-            self,
-            timeout_sec=0.05
-        )
+        deadline = time.monotonic() + timeout_sec
+        while self.latest_image is None and rclpy.ok():
+            remaining = deadline - time.monotonic()
+            if remaining <= 0.0:
+                break
+            rclpy.spin_once(
+                self,
+                timeout_sec=min(0.1, remaining),
+            )
 
         # まだ画像を受信していない場合
         if self.latest_image is None:
             self.get_logger().warn(
-                "カメラ画像をまだ受信していません。"
+                f"{timeout_sec:.1f}秒以内にカメラ画像を受信できませんでした。"
             )
             return None
 

@@ -21,12 +21,8 @@ from yolov8_detection_interfaces.srv import ObjectDetectionService
 
 from carrobo_manipulation_pkg.hsrif import HSRInterfaces
 
+from ..task_context import TaskContext
 
-# 掴みたい物体名を指定します。
-# 既存の把持例と同じ対象を初期値にしています。
-# 空文字にすると最もスコアが高い物体を選びます。
-# ロボット自身を選ぶ可能性があるため、通常は物体名を指定してください。
-TARGET_NAME = ''
 
 CONFIDENCE_THRESHOLD = 0.8
 MAX_GRASP_DISTANCE = 2.0
@@ -42,12 +38,14 @@ class RecogState(State):
         node: Node,
         hsrif: HSRInterfaces,
         tf_buffer: Buffer,
+        context: TaskContext,
     ):
         """サービスクライアントを生成する."""
-        super().__init__(outcomes=['succeeded', 'failed'])
+        super().__init__(outcomes=['succeeded', 'next_location', 'failed'])
         self.node = node
         self.hsrif = hsrif
         self.tf_buffer = tf_buffer
+        self.context = context
 
         self.detect_client = self.node.create_client(
             ObjectDetectionService, '/yolov8_detection/service'
@@ -67,20 +65,40 @@ class RecogState(State):
         return False
 
     @staticmethod
-    def _select_target(detections) -> int:
-        """対象名に一致する検出のうち、最も高スコアな添字を返す."""
+    def _select_target(detections, target_names) -> int:
+        """対象候補に一致する検出のうち最高スコアの添字を返す."""
+        expected_names = set(target_names)
         candidates = [
             (index, bbox.score)
             for index, bbox in enumerate(detections.bbox)
-            if not TARGET_NAME or bbox.name == TARGET_NAME
+            if bbox.name in expected_names
         ]
         if not candidates:
             return -1
         return max(candidates, key=lambda item: item[1])[0]
 
-    def execute(self, blackboard: Blackboard) -> str:
-        """対象物体を認識し、把持前姿勢を Blackboard に保存する."""
+    def _not_found_outcome(self) -> str:
+        """探索候補の残数に応じて次地点または失敗を返す."""
+        self.context.clear_grasp_result()
+        targets = ', '.join(self.context.target_objects) or '対象物体'
+        if self.context.has_pending_grasp_goals:
+            self.node.get_logger().warning(
+                f'{targets} が見つかりません。次の探索場所へ移動します。'
+            )
+            return 'next_location'
+        self.node.get_logger().error(
+            f'{targets} が見つからず、探索場所候補も残っていません。'
+        )
+        return 'failed'
+
+    def execute(self, _: Blackboard) -> str:
+        """対象物体を認識し、把持前姿勢を TaskContext に保存する."""
         self.node.get_logger().info('Executing state Recog')
+        self.context.clear_grasp_result()
+
+        if not self.context.target_objects:
+            self.node.get_logger().error('探索対象物体が設定されていません。')
+            return 'failed'
 
         if not self._wait_for_service(
             self.detect_client, '/yolov8_detection/service'
@@ -119,11 +137,12 @@ class RecogState(State):
         names = [bbox.name for bbox in detections.bbox]
         self.node.get_logger().info(f'検出した物体: {names}')
 
-        index = self._select_target(detections)
+        index = self._select_target(
+            detections,
+            self.context.target_objects,
+        )
         if index < 0:
-            target = TARGET_NAME or '物体'
-            self.node.get_logger().error(f'{target} が見つかりません。')
-            return 'failed'
+            return self._not_found_outcome()
         if index >= len(detections.segments):
             self.node.get_logger().error(
                 '検出物体に対応するマスクがありません。'
@@ -185,10 +204,13 @@ class RecogState(State):
         qx, qy, qz, qw = tft.quaternion_from_euler(roll, pitch, 0.0)
         object_pose.orientation = Quaternion(x=qx, y=qy, z=qz, w=qw)
 
-        blackboard.grasp_pose = object_pose
-        blackboard.grasp_approach = approach
-        blackboard.target_name = detections.bbox[index].name
+        target_name = detections.bbox[index].name
+        self.context.set_grasp_result(
+            target_name,
+            object_pose,
+            approach,
+        )
         self.node.get_logger().info(
-            f'{blackboard.target_name} の把持姿勢を Blackboard に保存しました。'
+            f'{target_name} の把持姿勢を TaskContext に保存しました。'
         )
         return 'succeeded'

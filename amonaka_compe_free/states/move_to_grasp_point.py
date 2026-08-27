@@ -9,7 +9,6 @@ from yasmin import Blackboard
 from yasmin import State
 
 
-
 # 把持場所の map 座標
 GOAL_X = 6.9
 GOAL_Y = 0.56

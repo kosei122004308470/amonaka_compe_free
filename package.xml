@@ -12,6 +12,8 @@
   <depend>tf2_ros</depend>
   <depend>tf2_geometry_msgs</depend>
   <depend>tf_transformations</depend>
+  <depend>sensor_msgs</depend>
+  <depend>cv_bridge</depend>
   <depend>navigation_tools</depend>
   <depend>carrobo_manipulation_pkg</depend>
   <depend>yolov8_detection_interfaces</depend>
@@ -23,6 +25,7 @@
   <exec_depend>yasmin_viewer</exec_depend>
   <exec_depend>launch</exec_depend>
   <exec_depend>launch_ros</exec_depend>
+  <exec_depend>ament_index_python</exec_depend>
   <exec_depend>yolov8_detection</exec_depend>
   <exec_depend>grasp_point_detection</exec_depend>
 

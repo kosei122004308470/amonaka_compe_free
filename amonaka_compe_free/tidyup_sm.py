@@ -14,14 +14,15 @@ from yasmin_viewer import YasminViewerPub
 from carrobo_manipulation_pkg.hsrif import HSRInterfaces
 
 from .states.grasp import GraspState
-from .states.move_to_grasp_point import Move2GraspPointState
-from .states.move_to_place_point import Move2PlacePointState
-from .states.place import PlaceState
+from .states.move2human import Move2HumanState
+from .states.move2grasp import Move2GraspState
 from .states.recog import RecogState
+from .states.receive_order import ReceiveOrderState
+from .task_context import TaskContext
 
 
 class TidyupStateMachineNode(Node):
-    """片付けの5ステートを構築して実行する ROS 2 ノード."""
+    """片付けタスクのステートマシンを構築して実行する ROS 2 ノード."""
 
     def __init__(self):
         """ロボットインターフェースとステートマシンを初期化する."""
@@ -30,6 +31,7 @@ class TidyupStateMachineNode(Node):
         # carrobo_nav と carrobo_manipulation_pkg の例と同じインターフェースです。
         self.nav = NavModule()
         self.hsrif = HSRInterfaces()
+        self.task_context = TaskContext()
 
         # Recog でカメラ座標系から base_link へ変換するために使います。
         self.tf_buffer = Buffer()
@@ -37,8 +39,29 @@ class TidyupStateMachineNode(Node):
 
         self.state_machine = StateMachine(outcomes=['SUCCEEDED', 'FAILED'])
         self.state_machine.add_state(
-            name='Move2GraspPoint',
-            state=Move2GraspPointState(self, self.nav),
+            name='Move2Human',
+            state=Move2HumanState(self, self.nav, self.task_context),
+            transitions={
+                'succeeded': 'ReceiveOrder',
+                'failed': 'FAILED',
+            },
+        )
+        self.receive_order = ReceiveOrderState(
+            self,
+            self.hsrif,
+            self.task_context,
+        )
+        self.state_machine.add_state(
+            name='ReceiveOrder',
+            state=self.receive_order,
+            transitions={
+                'succeeded': 'Move2Grasp',
+                'failed': 'FAILED',
+            },
+        )
+        self.state_machine.add_state(
+            name='Move2Grasp',
+            state=Move2GraspState(self, self.nav, self.task_context),
             transitions={
                 'succeeded': 'Recog',
                 'failed': 'FAILED',
@@ -46,33 +69,23 @@ class TidyupStateMachineNode(Node):
         )
         self.state_machine.add_state(
             name='Recog',
-            state=RecogState(self, self.hsrif, self.tf_buffer),
+            state=RecogState(
+                self,
+                self.hsrif,
+                self.tf_buffer,
+                self.task_context,
+            ),
             transitions={
                 'succeeded': 'Grasp',
+                'next_location': 'Move2Grasp',
                 'failed': 'FAILED',
             },
         )
         self.state_machine.add_state(
             name='Grasp',
-            state=GraspState(self, self.hsrif),
+            state=GraspState(self, self.hsrif, self.task_context),
             transitions={
-                'succeeded': 'Move2PlacePoint',
-                'failed': 'FAILED',
-            },
-        )
-        self.state_machine.add_state(
-            name='Move2PlacePoint',
-            state=Move2PlacePointState(self, self.nav),
-            transitions={
-                'succeeded': 'Place',
-                'failed': 'FAILED',
-            },
-        )
-        self.state_machine.add_state(
-            name='Place',
-            state=PlaceState(self, self.hsrif),
-            transitions={
-                'succeeded': 'Move2GraspPoint',
+                'succeeded': 'Move2Human',
                 'failed': 'FAILED',
             },
         )
@@ -83,9 +96,6 @@ class TidyupStateMachineNode(Node):
         )
 
         self.blackboard = Blackboard()
-        self.blackboard.grasp_pose = None
-        self.blackboard.grasp_approach = 0.0
-        self.blackboard.target_name = ''
 
     def run(self) -> str:
         """ステートマシンを実行し、最終 outcome を返す."""
@@ -95,6 +105,7 @@ class TidyupStateMachineNode(Node):
 
     def cleanup(self):
         """ナビゲーションと Viewer のバックグラウンド処理を止める."""
+        self.receive_order.close()
         if self.nav.is_navigating:
             self.nav.cancel_nav_action()
         self.nav.shutdown()

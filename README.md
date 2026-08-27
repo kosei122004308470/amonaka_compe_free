@@ -3,8 +3,13 @@
 ステートは次の順に遷移します
 
 ```text
-Move2GraspPoint -> Recog -> Grasp -> Move2PlacePoint -> Place
+Move2Human -> ReceiveOrder -> Move2Grasp -> Recog -> Grasp -> Move2Human
+                                    ^        |
+                                    |--------|
 ```
+
+`Recog` で対象物体が見つからない場合、探索場所のキューに候補が
+残っていれば `Move2Grasp` に戻ります。候補がなければ `FAILED` で終了します。
 
 
 ## ビルドと実行

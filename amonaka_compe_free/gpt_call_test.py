@@ -1,21 +1,21 @@
 import base64
-#import rclpy
+# import rclpy
 import yaml
 
 from openai import OpenAI
 
 
-#from camera_capture import CameraCapture
+# from camera_capture import CameraCapture
 
 # ============================================================
 # ROS 2
 # ============================================================
 
-#rclpy.init()
+# rclpy.init()
 
-#camera = CameraCapture(
-#    image_topic="/image_raw"
-#)
+# camera = CameraCapture(
+#     image_topic="/image_raw"
+# )
 
 
 # ============================================================
@@ -745,7 +745,6 @@ target_objectを「特定不能」にしてはいけません。
 """
 
 
-
 # ============================================================
 # 人間の指示
 # ============================================================
@@ -768,7 +767,7 @@ if jpeg_data is None:
     )
 
     camera.destroy_node()
-    #rclpy.shutdown()
+    # rclpy.shutdown()
 
     exit(1)
 """
@@ -864,5 +863,5 @@ print(response.output_text)
 # 終了
 # ============================================================
 
-#camera.destroy_node()
-#rclpy.shutdown()
+# camera.destroy_node()
+# rclpy.shutdown()

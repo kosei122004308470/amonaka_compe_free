@@ -1,6 +1,6 @@
-#GPTモデルが出力した2つのjsonファイルから、リストを生成する
-
 """
+GPTモデルが出力した2つのJSONファイルからリストを生成する.
+
 出力例
 (
     ['strawberry', 'tomatocan', 'apple'],

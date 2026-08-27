@@ -1,0 +1,9 @@
+carrobo:
+  x: 1.2
+  y: 2.0
+  theta: 180.0
+
+human:
+  x: 0.8
+  y: 2.0
+  theta: 0.0

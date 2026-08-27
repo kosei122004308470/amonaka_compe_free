@@ -1,0 +1,25 @@
+{
+  "instruction_features": [
+    "北東"
+  ],
+  "p_no1": [
+    {
+      "point": "A",
+      "reason": "てすとです"
+    },
+    {
+      "point": "B",
+      "reason": "てすとすす"
+    },
+    {
+     "point": "C",
+      "reason": "てすとです"
+    }
+  ],
+  "p_no2": [
+    {
+      "point": "D",
+      "reason": "てすとです"
+    }
+  ]
+}

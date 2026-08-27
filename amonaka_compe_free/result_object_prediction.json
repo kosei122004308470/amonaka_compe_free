@@ -1,0 +1,25 @@
+{
+  "instruction_features": [
+    "赤いもの"
+  ],
+  "o_no1": [
+    {
+      "object": "strawberry",
+      "reason": "一般的に赤い果物であるため"
+    },
+    {
+      "object": "tomatocan",
+      "reason": "トマトや缶のラベルが赤色と強く関連するため"
+    },
+    {
+      "object": "apple",
+      "reason": "赤いリンゴが一般的であるため"
+    }
+  ],
+  "o_no2": [
+    {
+      "object": "strawberrybox",
+      "reason": "イチゴ用の箱で、赤色と関連する可能性があるため"
+    }
+  ]
+}

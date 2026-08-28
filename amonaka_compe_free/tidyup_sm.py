@@ -13,6 +13,7 @@ from yasmin_viewer import YasminViewerPub
 
 from carrobo_manipulation_pkg.hsrif import HSRInterfaces
 
+from .states.bring_obj import BringObjState
 from .states.grasp import GraspState
 from .states.move2human import Move2HumanState
 from .states.move2grasp import Move2GraspState
@@ -85,7 +86,15 @@ class TidyupStateMachineNode(Node):
             name='Grasp',
             state=GraspState(self, self.hsrif, self.task_context),
             transitions={
-                'succeeded': 'Move2Human',
+                'succeeded': 'BringObj',
+                'failed': 'FAILED',
+            },
+        )
+        self.state_machine.add_state(
+            name='BringObj',
+            state=BringObjState(self, self.nav, self.task_context),
+            transitions={
+                'succeeded': 'SUCCEEDED',
                 'failed': 'FAILED',
             },
         )

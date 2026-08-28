@@ -24,10 +24,9 @@ from carrobo_manipulation_pkg.hsrif import HSRInterfaces
 from ..task_context import TaskContext
 
 
-CONFIDENCE_THRESHOLD = 0.8
+CONFIDENCE_THRESHOLD = 0.6
 MAX_GRASP_DISTANCE = 2.0
 TALL_THRESHOLD = 0.15
-HEAD_TILT = math.radians(-50.0)
 
 
 class RecogState(State):
@@ -91,6 +90,34 @@ class RecogState(State):
         )
         return 'failed'
 
+    def _move_to_recognition_pose(self) -> bool:
+        """現在地に設定された認識用関節姿勢へ移動する."""
+        goal = self.context.current_grasp_goal
+        if goal is None:
+            self.node.get_logger().error('現在の探索場所が設定されていません。')
+            return False
+
+        joint_positions = goal.recognition_joint_positions()
+        if not joint_positions:
+            self.node.get_logger().error(
+                f'探索場所 {goal.name} の認識用 joint 設定がありません。'
+            )
+            return False
+        try:
+            self.hsrif.whole_body.move_to_joint_positions(
+                joint_positions,
+                sync=True,
+            )
+        except Exception as error:
+            self.node.get_logger().error(
+                f'探索場所 {goal.name} の認識姿勢へ移動できません: {error}'
+            )
+            return False
+        self.node.get_logger().info(
+            f'{goal.name} の認識用 joint 設定を適用しました。'
+        )
+        return True
+
     def execute(self, _: Blackboard) -> str:
         """対象物体を認識し、把持前姿勢を TaskContext に保存する."""
         self.node.get_logger().info('Executing state Recog')
@@ -109,12 +136,9 @@ class RecogState(State):
         ):
             return 'failed'
 
-        # move_to_go はカメラを腕で隠すため、認識時は neutral 姿勢です。
-        self.hsrif.whole_body.move_to_neutral(sync=True)
-        self.hsrif.whole_body.move_to_joint_positions(
-            {'head_pan_joint': 0.0, 'head_tilt_joint': HEAD_TILT},
-            sync=True,
-        )
+        # carrobo_move.yaml の各場所に定義したカメラ・アーム姿勢を使う。
+        if not self._move_to_recognition_pose():
+            return 'failed'
         time.sleep(2.0)
 
         # TF を受信して Buffer に溜めてからサービスを呼びます。
@@ -198,8 +222,8 @@ class RecogState(State):
             self.node.get_logger().info('平たい物体なので上から掴みます。')
             roll = math.pi
             pitch = 0.0
-            object_pose.position.z += 0.1
-            approach = 0.05
+            object_pose.position.z += 0.15
+            approach = 0.09
 
         qx, qy, qz, qw = tft.quaternion_from_euler(roll, pitch, 0.0)
         object_pose.orientation = Quaternion(x=qx, y=qy, z=qz, w=qw)

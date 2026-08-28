@@ -1,11 +1,11 @@
 food:
   cheez-it:
-  sugerbox:
-  tomatocan:
+  suger_box:
+  tomato_can:
   mustard:
-  tunacan:
-  chocobox:
-  strawberrybox:
+  tuna_can:
+  choco_box:
+  strawberry_box:
   spam:
   banana:
   strawberry:
@@ -17,22 +17,22 @@ food:
   plum:
 
 shape:
-  soccerball:
-  softball:
-  baseball:
-  tennisball:
-  racquetball:
-  golfball:
+  soccer_ball:
+  soft_ball:
+  base_ball:
+  tennis_ball:
+  racquet_ball:
+  golf_ball:
   chain:
-  foambrick:
+  foam_brick:
   dice:
   marbies:
   cup:
 
 kitchen:
-  pitcherbase:
-  cleanserbottle:
-  spraybottle:
+  pitcher_base:
+  cleanser_bottle:
+  spray_bottle:
   bowl:
   mug:
   sponge:
@@ -44,7 +44,7 @@ kitchen:
 task:
   padlock:
   clamp:
-  woodblock:
+  wood_block:
   9-peg:
   lego:
   rubiks:

@@ -2,7 +2,7 @@
 TOYOTA HSRに借り物競争的なタスクを行わせる。人から曖昧な言語指示と、正解オブジェクトの方向を指差すポーズがヒントとして与えられる。OpenAI APIでGPTに言語指示や指差しのポーズ画像、オブジェクトリストや部屋配置をプロンプトとして与え、お題の答えとなる物体を探しに行く。
 # ステートマシン
 ```
-Move2Human -> ReceiveOrder -> Move2Grasp -> Recog -> Grasp -> Move2Human
+Move2Human -> ReceiveOrder -> Move2Grasp -> Recog -> Grasp -> BringObj -> SUCCEEDED
                                     |        |
                                     ----------
 ```
@@ -16,8 +16,12 @@ Move2Human -> ReceiveOrder -> Move2Grasp -> Recog -> Grasp -> Move2Human
 
 ## Grasp
 現行のGraspをほぼそのまま使うが、gripper.apply_forceによる把持に変更する
+## BringObj
+把持した物体を人の前へ運び、選んだ物体名を表示して正常終了する
 ## ReceiveOrder
 今gpt_callなどで使われているプロンプトをそのまま使ってGPTに指差し方向推定、正解物体推定を行わせる
+推定結果をターミナルに表示する
+物体と場所をそれぞれ優先度順に表示
 物体はリストとして、場所はキューとしてTaskContextに保管
 
 # ステート間の情報共有

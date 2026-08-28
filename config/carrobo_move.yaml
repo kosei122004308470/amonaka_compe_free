@@ -1,54 +1,141 @@
 pick_shelf:
-  x: 5.75
-  y: -1.2
-  theta: -90.0
+  map:
+    x: 5.9
+    y: -1.2
+    theta: -60.0
+  joint:
+    head_pan_joint: -30.0
+    head_tilt_joint: -10.0
+    arm_lift_joint: 0.0
+    arm_roll_joint: 0.0
+    wrist_flex_joint: -90.0
+    wrist_roll_joint: 0.0
 
 pick_table_sq:
-  x: 6.5
-  y: 0.8
-  theta: 0.0
+  map:
+    x: 6.5
+    y: 0.6
+    theta: 30.0
+  joint:
+    head_pan_joint: -30.0
+    head_tilt_joint: -40.0
+    arm_lift_joint: 0.5
+    arm_roll_joint: 0.0
+    wrist_flex_joint: -90.0
+    wrist_roll_joint: 0.0
 
 pick_table_rect:
-  x: 6.8
-  y: 3.8
-  theta: 0.0
+  map:
+    x: 6.3
+    y: 3.1
+    theta: 50.0
+  joint:
+    head_pan_joint: -30.0
+    head_tilt_joint: -30.0
+    arm_lift_joint: 0.5
+    arm_roll_joint: 0.0
+    wrist_flex_joint: -90.0
+    wrist_roll_joint: 0.0
 
 pick_table_cir:
-  x: 5.8
-  y: 2.8
-  theta: 90.0
+  map:
+    x: 5.7
+    y: 2.7
+    theta: 120.0
+  joint:
+    head_pan_joint: -30.0
+    head_tilt_joint: -40.0
+    arm_lift_joint: 0.5
+    arm_roll_joint: 0.0
+    wrist_flex_joint: -90.0
+    wrist_roll_joint: 0.0
 
 place_box_a:
-  x: 7.5
-  y: -1.2
-  theta: -90.0
+  map:
+    x: 7.5
+    y: -1.2
+    theta: -90.0
+  joint:
+    head_pan_joint: -30.0
+    head_tilt_joint: -40.0
+    arm_lift_joint: 0.5
+    arm_roll_joint: 0.0
+    wrist_flex_joint: -90.0
+    wrist_roll_joint: 0.0
 
 place_box_b:
-  x: 7.2
-  y: 5.4
-  theta: 0.0
+  map:
+    x: 7.2
+    y: 5.4
+    theta: 0.0
+  joint:
+    head_pan_joint: -30.0
+    head_tilt_joint: -40.0
+    arm_lift_joint: 0.5
+    arm_roll_joint: 0.0
+    wrist_flex_joint: -90.0
+    wrist_roll_joint: 0.0
 
 place_shelf:
-  x: 2.2
-  y: 4.2
-  theta: 90.0
+  map:
+    x: 2.2
+    y: 4.2
+    theta: 90.0
+  joint:
+    head_pan_joint: -30.0
+    head_tilt_joint: -10.0
+    arm_lift_joint: 0.0
+    arm_roll_joint: 0.0
+    wrist_flex_joint: -90.0
+    wrist_roll_joint: 0.0
 
 place_drawer:
-  x: 1.4
-  y: -1.2
-  theta: -90.0
+  map:
+    x: 1.4
+    y: -1.2
+    theta: -90.0
+  joint:
+    head_pan_joint: -30.0
+    head_tilt_joint: -40.0
+    arm_lift_joint: 0.5
+    arm_roll_joint: 0.0
+    wrist_flex_joint: -90.0
+    wrist_roll_joint: 0.0
 
 place_container:
-  x: 2.4
-  y: -1.2
-  theta: -90.0
+  map:
+    x: 2.4
+    y: -1.2
+    theta: -90.0
+  joint:
+    head_pan_joint: -30.0
+    head_tilt_joint: -40.0
+    arm_lift_joint: 0.5
+    arm_roll_joint: 0.0
+    wrist_flex_joint: -90.0
+    wrist_roll_joint: 0.0
 
 place_penholder:
-  x: 2.8
-  y: -1.2
-  theta: -90.0
-
+  map:
+    x: 2.8
+    y: -1.2
+    theta: -90.0
+  joint:
+    head_pan_joint: -30.0
+    head_tilt_joint: -40.0
+    arm_lift_joint: 0.5
+    arm_roll_joint: 0.0
+    wrist_flex_joint: -90.0
+    wrist_roll_joint: 0.0
 place_tray:
-  x: 3.4
-  y: -1.2
-  theta: -90.0
+  map:
+    x: 3.4
+    y: -1.2
+    theta: -90.0
+  joint:
+    head_pan_joint: -30.0
+    head_tilt_joint: -40.0
+    arm_lift_joint: 0.5
+    arm_roll_joint: 0.0
+    wrist_flex_joint: -90.0
+    wrist_roll_joint: 0.0

@@ -11,7 +11,7 @@ from carrobo_manipulation_pkg.hsrif import HSRInterfaces
 from ..task_context import TaskContext
 
 
-GRASP_FORCE = 2.0
+GRASP_FORCE = 4.5
 
 
 class GraspState(State):
@@ -56,6 +56,11 @@ class GraspState(State):
             self.hsrif.gripper.apply_force(
                 effort=GRASP_FORCE,
                 delicate=False,
+                sync=True,
+            )
+            self.hsrif.whole_body.move_end_effector_by_line(
+                (0, 0, -1),
+                self.context.grasp_approach,
                 sync=True,
             )
             self.hsrif.whole_body.move_to_go(sync=True)

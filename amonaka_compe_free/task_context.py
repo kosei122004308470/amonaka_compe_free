@@ -15,6 +15,13 @@ class NavigationGoal:
     x: float
     y: float
     yaw: float
+    # carrobo_move.yaml の joint を ROS 単位へ変換して保持する。
+    # tuple にしておくことで、ステート間で誤って書き換えない。
+    joint_positions: tuple[tuple[str, float], ...] = ()
+
+    def recognition_joint_positions(self) -> dict[str, float]:
+        """認識時に whole_body へ渡す関節角度を返す."""
+        return dict(self.joint_positions)
 
 
 @dataclass

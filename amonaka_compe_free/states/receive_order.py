@@ -14,6 +14,7 @@ from openai import OpenAI
 from yasmin import State
 
 from ..pointing_pic import CameraCapture
+from ..prediction_result_converter import PredictionResultConverter
 from ..task_context import NavigationGoal
 from ..task_context import TaskContext
 
@@ -21,7 +22,10 @@ from ..task_context import TaskContext
 MODEL = 'gpt-5.6-luna'
 REASONING_EFFORT = 'medium'
 IMAGE_TOPIC = '/head_rgbd_sensor/rgb/image_color'
-DEFAULT_INSTRUCTION = 'あかくてまるいもの'
+DEFAULT_INSTRUCTION = '泡がでるもの'
+# HSR の arm_lift_joint だけは直動関節なので YAML の値をメートルのまま
+# 用いる。その他の joint は YAML では度数で記載されている。
+LINEAR_JOINTS = {'arm_lift_joint'}
 
 
 def default_instruction_provider() -> str:
@@ -201,7 +205,8 @@ class ReceiveOrderState(State):
             ],
         )
         try:
-            result = json.loads(response.output_text)
+            output_text = response.output_text
+            result = json.loads(output_text)
         except (AttributeError, TypeError, json.JSONDecodeError) as error:
             raise ValueError(
                 'GPT の出力が指定された JSON 形式ではありません: '
@@ -295,28 +300,69 @@ class ReceiveOrderState(State):
             if location in seen_locations:
                 continue
             seen_locations.add(location)
-            point = map_info.get(location)
-            if not isinstance(point, dict):
+            location_config = map_info.get(location)
+            if not isinstance(location_config, dict):
                 raise ValueError(f'未知の探索場所です: {location}')
             try:
-                x = float(point['x'])
-                y = float(point['y'])
-                yaw = math.radians(float(point['theta']))
+                map_pose = location_config['map']
+                joint_config = location_config['joint']
+                if not isinstance(map_pose, dict) or not isinstance(
+                    joint_config, dict
+                ):
+                    raise TypeError
+                x = float(map_pose['x'])
+                y = float(map_pose['y'])
+                yaw = math.radians(float(map_pose['theta']))
             except (KeyError, TypeError, ValueError) as error:
                 raise ValueError(
-                    f'探索場所 {location} の座標が不正です。'
+                    f'探索場所 {location} の map 設定が不正です。'
                 ) from error
             if not all(math.isfinite(value) for value in (x, y, yaw)):
                 raise ValueError(
-                    f'探索場所 {location} の座標が不正です。'
+                    f'探索場所 {location} の map 設定が不正です。'
                 )
-            goals.append(NavigationGoal(location, x, y, yaw))
+
+            joint_positions = []
+            try:
+                for joint_name, raw_value in joint_config.items():
+                    if not isinstance(joint_name, str):
+                        raise TypeError
+                    value = float(raw_value)
+                    if not math.isfinite(value):
+                        raise ValueError
+                    if joint_name not in LINEAR_JOINTS:
+                        value = math.radians(value)
+                    joint_positions.append((joint_name, value))
+            except (TypeError, ValueError) as error:
+                raise ValueError(
+                    f'探索場所 {location} の joint 設定が不正です。'
+                ) from error
+            if not joint_positions:
+                raise ValueError(
+                    f'探索場所 {location} の joint 設定がありません。'
+                )
+            goals.append(
+                NavigationGoal(location, x, y, yaw, tuple(joint_positions))
+            )
 
         target_objects = []
         for entry in entries:
             if entry['object'] not in target_objects:
                 target_objects.append(entry['object'])
         self.context.begin_order(target_objects, goals, result)
+
+    def _log_prediction_result(self) -> None:
+        """GPTの認識結果と採用した探索計画を自然文で表示する."""
+        description = PredictionResultConverter.describe_order(
+            self.context.order_result or {},
+            self.context.target_objects,
+            (goal.name for goal in self.context.grasp_goals),
+        )
+        self.node.get_logger().info(
+            '\n========== GPT 認識・実行結果 ==========\n'
+            f'{description}\n'
+            '===================================='
+        )
 
     def execute(self, _) -> str:
         """人の指示を受け、GPT 結果を TaskContext に保存する."""
@@ -331,8 +377,15 @@ class ReceiveOrderState(State):
             instruction = self.instruction_provider()
             if not isinstance(instruction, str) or not instruction.strip():
                 raise ValueError('人間の指示が空です。')
+            instruction = instruction.strip()
+            self.node.get_logger().info(
+                '\n========== 人からの指示 ==========\n'
+                f'{instruction}\n'
+                '===================================='
+            )
             result = self._request(instruction, self._capture_image())
             self._validate_and_update(result)
+            self._log_prediction_result()
         except Exception as error:
             self.node.get_logger().error(
                 f'指示の受信に失敗しました: {error}'
